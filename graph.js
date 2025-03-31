@@ -53,6 +53,19 @@ const tip = d3.tip()
 graph.call(tip);
 
 const update = (data1) => {
+    // Calculate total cost
+    const totalCost = data1.reduce((sum, item) => sum + item.cost, 0);
+
+    // Remove existing total cost text
+    graph.selectAll(".total-cost").remove();
+
+    // Add total cost in the center
+    graph.append("text")
+        .attr("class", "total-cost")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .text(`Total: ₹${totalCost}`);
+
     // Update color domain based on the names in our data
     color.domain(data1.map(d => d.name));
 
@@ -87,7 +100,7 @@ const update = (data1) => {
         .attrTween("d", arcTweenEnter);
 
     // Handle labels
-    const labels = graph.selectAll("text")
+    const labels = graph.selectAll("text.slice-label")
         .data(pie(data1));
 
     // Handle exit selection for labels
@@ -101,6 +114,7 @@ const update = (data1) => {
     // Handle enter selection for labels
     labels.enter()
         .append("text")
+        .attr("class", "slice-label")
         .attr("transform", d => `translate(${arcPath.centroid(d)})`)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
